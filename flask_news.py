@@ -1,6 +1,8 @@
 # -- coding: utf-8 --
-from flask import Flask, render_template
+from flask import Flask, render_template, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from forms import NewsForm
+from datetime import datetime
 """
 https://pypi.python.org/pypi/Flask-SQLAlchemy
 http://flask-sqlalchemy.pocoo.org/2.1/
@@ -12,13 +14,13 @@ http://docs.sqlalchemy.org/en/latest/core/type_basics.html#generic-types
 app = Flask(__name__)  # 构造出一个app对象
 
 app.config['SQLALCHEMY_DATABASE_URI']  = 'mysql+pymysql://root:123456@127.0.0.1/flask_news?charset=utf8'
+app.config['SECRET_KEY'] = 'this is a random key string'
 db = SQLAlchemy(app)
 
 
 class News(db.Model):
     """ 新闻模型 """
     __tablename__ = 'news'
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.String(2000), nullable=False)
@@ -65,11 +67,24 @@ def admin(page=None):
     return render_template('admin/index.html', page_data=page_data)
 
 
-@app.route('/add/')
+@app.route('/admin/add/', methods=('GET', 'POST'))
 def add():
-    """ 新闻管理首页 """
-    new_list = News.query.all()
-    return render_template('admin/index.html', new_list=new_list)
+    form = NewsForm()
+    if form.validate_on_submit():
+        # 获取数据
+        new_obj = News(
+            title=form.title.data,
+            content=form.content.data,
+            image=form.image.data,
+            types=form.types.data,
+            created_at=datetime.now(),
+        )
+        # 保存数据
+        db.session.add(new_obj)
+        db.session.commit()
+        flash("新增成功")
+        return redirect(url_for('admin'))
+    return render_template("admin/add.html", form=form)
 
 
 @app.route('/update/<int:pk>/')
