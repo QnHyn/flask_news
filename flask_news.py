@@ -37,7 +37,7 @@ class News(db.Model):
 @app.route('/')
 def index():
     '''新闻首页'''
-    news_list = News.query.all()
+    news_list = News.query.filter_by(is_valid=1)
     return render_template('index.html', news_list=news_list)
 
 
@@ -53,6 +53,37 @@ def detail(pk):
     """ 新闻详情页 """
     new_obj = News.query.get(pk)
     return render_template('detail.html', new_obj=new_obj)
+
+
+@app.route('/admin/')
+@app.route('/admin/<int:page>/')
+def admin(page=None):
+    """ 新闻管理首页 """
+    if page is None:
+        page = 1
+    page_data = News.query.paginate(page=page, per_page=3)
+    return render_template('admin/index.html', page_data=page_data)
+
+
+@app.route('/add/')
+def add():
+    """ 新闻管理首页 """
+    new_list = News.query.all()
+    return render_template('admin/index.html', new_list=new_list)
+
+
+@app.route('/update/<int:pk>/')
+def update():
+    """ 新闻管理首页 """
+    new_list = News.query.all()
+    return render_template('admin/index.html', new_list=new_list)
+
+
+@app.route('/delete/<int:pk>/')
+def delete():
+    """ 新闻管理首页 """
+    new_list = News.query.all()
+    return render_template('admin/index.html', new_list=new_list)
 
 
 if __name__ == '__main__':
