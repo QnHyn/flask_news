@@ -1,5 +1,5 @@
 # -- coding: utf-8 --
-from flask import Flask, render_template, flash, redirect, url_for
+from flask import Flask, render_template, flash, redirect, url_for, abort, request
 from flask_sqlalchemy import SQLAlchemy
 from forms import NewsForm
 from datetime import datetime
@@ -87,18 +87,38 @@ def add():
     return render_template("admin/add.html", form=form)
 
 
-@app.route('/update/<int:pk>/')
-def update():
-    """ 新闻管理首页 """
-    new_list = News.query.all()
-    return render_template('admin/index.html', new_list=new_list)
+@app.route('/admin/update/<int:pk>/', methods=['GET', 'POST'])
+def update(pk):
+    """ 修改新闻 """
+    obj = News.query.get(pk)
+    if obj is None:
+        abort(404)
+    form = NewsForm(obj=obj)
+    if form.validate_on_submit():
+        obj.title = form.title.data
+        obj.content = form.content.data
+        obj.news_type = form.types.data
+
+        db.session.add(obj)
+        db.session.commit()
+        flash("修改成功")
+        return redirect(url_for('admin'))
+    return render_template("admin/update.html", form=form)
 
 
-@app.route('/delete/<int:pk>/')
-def delete():
-    """ 新闻管理首页 """
-    new_list = News.query.all()
-    return render_template('admin/index.html', new_list=new_list)
+@app.route('/admin/delete/<int:pk>/', methods=['POST'])
+def delete(pk):
+    """ 异步ajax删除 逻辑删除 """
+    if request.method == 'POST':
+        obj = News.query.get(pk)
+        if obj is None:
+            return 'no'
+        obj.is_valid = False
+        db.session.add(obj)
+        db.session.commit()
+        return 'yes'
+    return 'no'
+
 
 
 if __name__ == '__main__':
