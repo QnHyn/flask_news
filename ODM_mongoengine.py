@@ -114,3 +114,26 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# db.students.insertMany(
+# [
+#     {name: "bob", age:16, gender:"male", grade:95},
+#     {name: "ana", age:18, gender:"female", grade:45},
+#     {name: "xi", age:15, gender:"male", grade:75},
+#     {name: "bob1", age:16, gender:"male", grade:95},
+#     {name: "ana1", age:18, gender:"female", grade:45},
+#     {name: "jack", age:18, gender:"male", grade:85},
+#     {name: "tom", age:19, gender:"male", grade:65},
+#     {name: "lily", age:16, gender:"female", grade:59},
+#     {name: "lucy", age:18, gender:"female", grade:68},
+#     {name: "lilei", age:18, gender:"female", grade:68},
+#     {name: "hanmeimei", age:16, gender:"female", grade:90},
+#     {name: "harry", age:16, gender:"male", grade:81},
+#     {name: "json", age:16, gender:"male", grade:75},
+#     {name: "jim", age:16, gender:"male", grade:36},
+#     {name: "rose", age:16, gender:"female", grade:91},
+#     {name: "moli", age:16, gender:"female", grade:93},
+#     {name: "linda", age:16, gender:"female", grade:96}
+# ]
+# )

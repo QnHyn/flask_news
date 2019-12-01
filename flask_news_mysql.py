@@ -1,7 +1,7 @@
 # -- coding: utf-8 --
 from flask import Flask, render_template, flash, redirect, url_for, abort, request
 from flask_sqlalchemy import SQLAlchemy
-from forms import NewsForm
+from forms import NewsForm_mysql
 from datetime import datetime
 """
 https://pypi.python.org/pypi/Flask-SQLAlchemy
@@ -11,7 +11,7 @@ http://docs.sqlalchemy.org/en/latest/core/type_basics.html#generic-types
 """
 
 
-app = Flask(__name__)  # 构造出一个app对象
+app = Flask(__name__, template_folder='templates_mysql')  # 构造出一个app对象
 
 app.config['SQLALCHEMY_DATABASE_URI']  = 'mysql+pymysql://root:123456@127.0.0.1/flask_news?charset=utf8'
 app.config['SECRET_KEY'] = 'this is a random key string'
@@ -69,7 +69,7 @@ def admin(page=None):
 
 @app.route('/admin/add/', methods=('GET', 'POST'))
 def add():
-    form = NewsForm()
+    form = NewsForm_mysql()
     if form.validate_on_submit():
         # 获取数据
         new_obj = News(
@@ -93,7 +93,7 @@ def update(pk):
     obj = News.query.get(pk)
     if obj is None:
         abort(404)
-    form = NewsForm(obj=obj)
+    form = NewsForm_mysql(obj=obj)
     if form.validate_on_submit():
         obj.title = form.title.data
         obj.content = form.content.data
