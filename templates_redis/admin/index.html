@@ -1,0 +1,96 @@
+{% extends 'admin/base.html' %}
+{% block head %}
+<title>新闻后台首页</title>
+{% endblock %}
+{% block content %}
+        <!-- 消息闪现 -->
+        {% for msg in get_flashed_messages() %}
+          <p class="bg-success">{{msg}}</p>
+         {% endfor %}
+
+        <!-- 表格，存放新闻具体内容 -->
+        <table class="table table-hover">
+
+            <tr class="info">
+                    <th>编号</th>
+                    <th>新闻标题</th>
+                    <th>类别</th>
+                    <th>添加时间</th>
+                    <th>操作</th>
+            </tr>
+            {% for new_obj in page_data.items %}
+            <tr class="active">
+                <td>{{ new_obj.id }}</td>
+                <td>{{ new_obj.title }}</td>
+                <td>{{new_obj.types }}</td>
+                <td>{{new_obj.created_at }}</td>
+                <td><a href="{{url_for('update', pk = new_obj.id)}}" class='btn btn-success'>修改</a><a data-url="{{ url_for('delete', pk=new_obj.id) }}" class='btn btn-danger'>删除</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- 分页，默认分页 -->
+
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+              {% if page_data.has_prev %}
+            <li>
+              <a href="{{ url_for('admin', page=page_data.prev_num) }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            {% else %}
+            <li class="disabled"><a href="javascipt:;">&raquo;</a></li>
+            {% endif %}
+            {% for page in page_data.iter_pages() %}
+            {% if page == page_data.page %}
+            <li class="active">
+                <a href="javascript:;">{{ page }}</a>
+            </li>
+            {% else %}
+            <li>
+                <a href="{{ url_for('admin', page=page) }}">{{ page }}</a>
+            </li>
+            {% endif %}
+           {% endfor %}
+
+           {% if page_data.has_next %}
+            <li>
+              <a href="{{ url_for('admin', page=page_data.next_num) }}">&raquo;</a>
+            </li>
+            {% else %}
+            <li class="disabled">
+              <a href="javascript:;">&raquo;</a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+
+        </div>
+        </div>
+    {% endblock %}
+{% block extrajs %}
+<script type="text/javascript" src="{{ url_for('static', filename='jquery-3.3.1.min.js') }}"></script>
+<script type="text/javascript">
+    // 通过ajax异步删除新闻
+     $(function(){
+         $('.btn-danger').on('click', function(){
+             var _this = $(this)
+             var url = _this.attr('data-url')
+             // 弹框确认是否删除
+             if (confirm('确认删除吗？')){
+                 // ajax发送post请求
+                 $.post(url, function(res){
+                     if(res == 'yes'){
+                         // 如果后台删除成功则隐藏该行
+                         _this.parents('tr').hide()
+                     }else{
+                         alert('删除失败');
+                     }
+                 })
+             }
+
+         })
+     })
+</script>
+{% endblock %}

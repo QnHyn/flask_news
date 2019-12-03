@@ -10,10 +10,7 @@ class StringTest(object):
     def __init__(self):
         # redis.Redis()兼容老版本，redis.StrictRedis()不考虑兼容性
         # self.r = redis.Redis(host='localhost', port=6379, db=0)
-        self.r = redis.StrictRedis(host = 'localhost',
-         port=6379,
-         db=0,
-         decode_responses=True)
+        self.r = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
     def test_set(self):
         ''' set -- 设置值 '''
